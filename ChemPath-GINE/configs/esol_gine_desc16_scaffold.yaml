@@ -1,0 +1,52 @@
+run:
+  name: "esol_gine_desc16_scaffold"
+  output_dir: "runs"
+  seed: 42
+  device: "auto"
+
+data:
+  csv: "data/processed/esol_with_desc.csv"
+  smiles_col: "SMILES"
+  target_col: "Solubility"
+  descriptor_cols: &desc16
+    - "MinimumDegree"
+    - "MolecularWeight"
+    - "MolLogP"
+    - "MolMR"
+    - "HeavyAtomCount"
+    - "HBondDonors"
+    - "HBondAcceptors"
+    - "RingCount"
+    - "RotatableBonds"
+    - "PolarSurfaceArea"
+    - "FractionCSP3"
+    - "AromaticRings"
+    - "AliphaticRings"
+    - "LabuteASA"
+    - "BalabanJ"
+    - "BertzCT"
+  split: "scaffold"
+  train_ratio: 0.7
+  val_ratio: 0.15
+  cache_dir: "cache"
+
+model:
+  variant: "gine_desc"
+  hidden_dim: 128
+  num_gnn_layers: 3
+  num_attention_layers: 1
+  heads: 4
+  dropout: 0.10
+  use_descriptor_fusion: false
+  use_descriptor_path_gate: false
+  max_path_distance: 12
+
+train:
+  epochs: 120
+  batch_size: 64
+  lr: 0.0003
+  weight_decay: 0.00001
+  accum_steps: 1
+  max_grad_norm: 5.0
+  patience: 18
+  num_workers: 0

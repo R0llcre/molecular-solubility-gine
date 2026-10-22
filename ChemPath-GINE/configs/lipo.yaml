@@ -1,0 +1,36 @@
+run:
+  name: "lipo"
+  output_dir: "runs"
+  seed: 42
+  device: "auto"            # auto, cuda, mps, or cpu
+
+data:
+  csv: "data/processed/lipo.csv"
+  smiles_col: "SMILES"
+  target_col: "Lipophilicity"
+  descriptor_cols: []
+  split: "random"
+  train_ratio: 0.7
+  val_ratio: 0.15
+  cache_dir: "cache"
+
+model:
+  variant: "chempath_gine"
+  hidden_dim: 128
+  num_gnn_layers: 3
+  num_attention_layers: 1
+  heads: 4
+  dropout: 0.15
+  use_descriptor_fusion: false
+  use_descriptor_path_gate: false
+  max_path_distance: 12
+
+train:
+  epochs: 80
+  batch_size: 64
+  lr: 0.0005
+  weight_decay: 0.00001
+  accum_steps: 1
+  max_grad_norm: 5.0
+  patience: 12
+  num_workers: 0

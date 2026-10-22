@@ -1,0 +1,42 @@
+run:
+  name: "chempath_desc"
+  output_dir: "runs"
+  seed: 42
+  device: "auto"
+
+data:
+  csv: "data/processed/esol_with_desc.csv"
+  smiles_col: "SMILES"
+  target_col: "Solubility"
+  descriptor_cols:
+    - "MinimumDegree"
+    - "MolecularWeight"
+    - "HBondDonors"
+    - "RingCount"
+    - "RotatableBonds"
+    - "PolarSurfaceArea"
+  split: "random"
+  train_ratio: 0.7
+  val_ratio: 0.15
+  cache_dir: "cache"
+
+model:
+  variant: "chempath_desc"
+  hidden_dim: 128
+  num_gnn_layers: 3
+  num_attention_layers: 1
+  heads: 4
+  dropout: 0.15
+  use_descriptor_fusion: true
+  use_descriptor_path_gate: true
+  max_path_distance: 12
+
+train:
+  epochs: 80
+  batch_size: 64
+  lr: 0.0005
+  weight_decay: 0.00001
+  accum_steps: 1
+  max_grad_norm: 5.0
+  patience: 12
+  num_workers: 0

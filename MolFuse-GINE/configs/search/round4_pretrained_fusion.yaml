@@ -1,0 +1,53 @@
+name: round4_pretrained_fusion
+output_root: sota_runs_v2
+seeds: [1, 2, 3, 4, 5]
+
+configs:
+  - configs/esol_gine_desc16.yaml
+  - configs/esol_gine_desc16_scaffold.yaml
+  - configs/lipo_gine_desc16.yaml
+  - configs/lipo_gine_desc16_scaffold.yaml
+  - configs/freesolv_gine_desc16.yaml
+  - configs/freesolv_gine_desc16_scaffold.yaml
+
+pretrained_oof:
+  model_names:
+    - DeepChem/ChemBERTa-77M-MLM
+    # Add accessible alternatives here, for example:
+    # - seyonec/ChemBERTa-zinc-base-v1
+    # - ibm/MoLFormer-XL-both-10pct
+  feature_sets:
+    - embedding
+    - desc16
+    - desc16_morgan2
+    - rdkit2d_descsel64_morgan2_maccs
+  head_models:
+    - ridge
+    - elasticnet
+    - xgb
+    - lightgbm
+  random_smiles: 16
+  folds: 5
+  batch_size: 32
+  device: auto
+
+pruned_mixed_stack:
+  name: round4_pretrained_pruned_stack
+  out_name: pruned_mixed_stack_round4
+  meta_models: [ridge, bayesian_ridge, nonnegative]
+  top_k: 6
+  max_experts: 10
+  corr_threshold: 0.95
+  oof_rmse_slack: 0.15
+  allow_missing_experts: true
+  min_existing_experts: 4
+  expert_dir_templates:
+    - "{cfg_out}/tabular_stack/runs/seed{seed}_ridge"
+    - "{cfg_out}/graph_oof/runs/seed{seed}_gine_desc_concat"
+    - "{cfg_out}/graph_oof/runs/seed{seed}_pna_desc"
+    - "{cfg_out}/graph_oof/runs/seed{seed}_dmpnn_desc"
+    - "{cfg_out}/graph_oof/runs/seed{seed}_attentivefp_desc"
+    - "{cfg_out}/pretrained_oof/runs/seed{seed}_DeepChem_ChemBERTa-77M-MLM_embedding_ridge"
+    - "{cfg_out}/pretrained_oof/runs/seed{seed}_DeepChem_ChemBERTa-77M-MLM_desc16_ridge"
+    - "{cfg_out}/pretrained_oof/runs/seed{seed}_DeepChem_ChemBERTa-77M-MLM_desc16_morgan2_xgb"
+    - "{cfg_out}/pretrained_oof/runs/seed{seed}_DeepChem_ChemBERTa-77M-MLM_rdkit2d_descsel64_morgan2_maccs_lightgbm"

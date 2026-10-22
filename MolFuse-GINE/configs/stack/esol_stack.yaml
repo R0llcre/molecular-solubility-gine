@@ -1,0 +1,16 @@
+data:
+  csv: "data/processed/esol_with_desc.csv"
+  smiles_col: "SMILES"
+  target_col: "Solubility"
+  split: "random"
+  train_ratio: 0.7
+  val_ratio: 0.15
+
+stack:
+  experts:
+    - "desc16:ridge"
+    - "desc16_morgan2:xgb"
+    - "desc16_morgan2_maccs:xgb"
+    - "rdkit2d_selected32_morgan2_maccs:ridge"
+  folds: 5
+  meta_model: "ridge"

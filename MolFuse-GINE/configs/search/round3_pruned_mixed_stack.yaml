@@ -1,0 +1,51 @@
+name: round3_pruned_mixed_stack
+output_root: sota_runs_v2
+seeds: [1, 2, 3, 4, 5]
+
+configs:
+  - configs/esol_gine_desc16.yaml
+  - configs/esol_gine_desc16_scaffold.yaml
+  - configs/lipo_gine_desc16.yaml
+  - configs/lipo_gine_desc16_scaffold.yaml
+  - configs/freesolv_gine_desc16.yaml
+  - configs/freesolv_gine_desc16_scaffold.yaml
+
+split_audit:
+  out: reports/split_audit
+  actual_split_template: "sota_runs_v2/{name}/tabular_stack/splits/seed{seed}"
+
+# Round 3 assumes round1/round2 have produced graph_oof, tabular_stack,
+# tabular_stack_extra, and pretrained_oof. It prunes on train OOF only.
+pruned_mixed_stack:
+  name: round3_pruned_stack
+  out_name: pruned_mixed_stack_round3
+  meta_models:
+    - ridge
+    - elasticnet
+    - bayesian_ridge
+    - nonnegative
+    - average
+  top_k: 6
+  max_experts: 10
+  corr_threshold: 0.95
+  oof_rmse_slack: 0.15
+  allow_missing_experts: true
+  min_existing_experts: 3
+  expert_dir_templates:
+    - "{cfg_out}/tabular_stack/runs/seed{seed}_ridge"
+    - "{cfg_out}/graph_oof/runs/seed{seed}_gine_desc_concat"
+    - "{cfg_out}/graph_oof/runs/seed{seed}_pna_desc"
+    - "{cfg_out}/graph_oof/runs/seed{seed}_dmpnn_desc"
+    - "{cfg_out}/graph_oof/runs/seed{seed}_attentivefp_desc"
+    - "{cfg_out}/tabular_stack_extra/runs/seed{seed}_ridge"
+    - "{cfg_out}/pretrained_oof/runs/seed{seed}_DeepChem_ChemBERTa-77M-MLM_embedding_ridge"
+    - "{cfg_out}/pretrained_oof/runs/seed{seed}_DeepChem_ChemBERTa-77M-MLM_embedding_elasticnet"
+    - "{cfg_out}/pretrained_oof/runs/seed{seed}_DeepChem_ChemBERTa-77M-MLM_embedding_xgb"
+
+distill:
+  teacher_template: "{cfg_out}/pruned_mixed_stack_round3/runs/seed{seed}_ridge"
+  split_template: "{cfg_out}/tabular_stack/splits/seed{seed}"
+  variants:
+    - gine_desc_concat
+    - dmpnn_desc
+  weights: [0.1, 0.2, 0.3, 0.5, 0.7, 1.0]

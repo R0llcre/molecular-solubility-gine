@@ -1,0 +1,68 @@
+name: round2_pretrained_fragment_3d
+output_root: sota_runs_v2
+seeds: [1, 2, 3, 4, 5]
+
+configs:
+  - configs/esol_gine_desc16.yaml
+  - configs/esol_gine_desc16_scaffold.yaml
+  - configs/lipo_gine_desc16.yaml
+  - configs/lipo_gine_desc16_scaffold.yaml
+  - configs/freesolv_gine_desc16.yaml
+  - configs/freesolv_gine_desc16_scaffold.yaml
+
+tabular:
+  out_name: tabular_extra
+  feature_sets:
+    - rdkit2d_selected64_morgan2_maccs_fg_brics512
+    - rdkit2d_selected128_morgan2_maccs_fg_brics512
+    - rdkit2d_selected64_morgan2_maccs_fg_conf3d5
+    - rdkit2d_selected64_morgan2_maccs_fg_conf3d10
+  models:
+    - ridge
+    - xgb
+    - lightgbm
+    - catboost
+
+tabular_stack:
+  out_name: tabular_stack_extra
+  folds: 5
+  meta_model: ridge
+  experts:
+    - rdkit2d_selected64_morgan2_maccs_fg_brics512:xgb
+    - rdkit2d_selected128_morgan2_maccs_fg_brics512:lightgbm
+    - rdkit2d_selected64_morgan2_maccs_fg_conf3d5:ridge
+    - rdkit2d_selected64_morgan2_maccs_fg_conf3d10:xgb
+
+pretrained_oof:
+  model_names:
+    - DeepChem/ChemBERTa-77M-MLM
+  feature_sets:
+    - embedding
+  head_models:
+    - ridge
+    - elasticnet
+    - xgb
+  random_smiles: 16
+  folds: 5
+  batch_size: 32
+  device: auto
+
+mixed_stack:
+  name: round2_full_stack
+  out_name: mixed_stack_round2
+  meta_models:
+    - ridge
+    - elasticnet
+    - bayesian_ridge
+    - average
+    - nonnegative
+  expert_dir_templates:
+    - "{cfg_out}/tabular_stack/runs/seed{seed}_ridge"
+    - "{cfg_out}/graph_oof/runs/seed{seed}_gine_desc_concat"
+    - "{cfg_out}/graph_oof/runs/seed{seed}_pna_desc"
+    - "{cfg_out}/graph_oof/runs/seed{seed}_dmpnn_desc"
+    - "{cfg_out}/graph_oof/runs/seed{seed}_attentivefp_desc"
+    - "{cfg_out}/tabular_stack_extra/runs/seed{seed}_ridge"
+    - "{cfg_out}/pretrained_oof/runs/seed{seed}_DeepChem_ChemBERTa-77M-MLM_embedding_ridge"
+    - "{cfg_out}/pretrained_oof/runs/seed{seed}_DeepChem_ChemBERTa-77M-MLM_embedding_elasticnet"
+    - "{cfg_out}/pretrained_oof/runs/seed{seed}_DeepChem_ChemBERTa-77M-MLM_embedding_xgb"

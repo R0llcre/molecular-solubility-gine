@@ -1,0 +1,21 @@
+data:
+  csv: "data/processed/freesolv_with_desc.csv"
+  smiles_col: "SMILES"
+  target_col: "FreeSolv"
+  split: "random"
+  train_ratio: 0.7
+  val_ratio: 0.15
+
+tabular:
+  feature_sets:
+    - "desc16"
+    - "morgan2"
+    - "desc16_morgan2"
+    - "desc16_morgan2_maccs"
+    - "rdkit2d_selected32_morgan2_maccs"
+  models:
+    - "ridge"
+    - "elasticnet"
+    - "svr"
+    - "rf"
+    - "xgb"
