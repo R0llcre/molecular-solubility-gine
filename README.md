@@ -144,7 +144,7 @@ The cross-architecture ensemble, the confirmation splits, the refit and the boot
 
 ## Acknowledgements
 
-Advisor: Prof. Yongquan Jiang, University of Leeds. Datasets: MoleculeNet / DeepChem (ESOL from Delaney 2004, Lipophilicity from ChEMBL / AstraZeneca, FreeSolv from Mobley and Guthrie). Built on PyTorch Geometric and RDKit.
+Advisor: Prof. Yongquan Jiang. Datasets: MoleculeNet / DeepChem (ESOL from Delaney 2004, Lipophilicity from ChEMBL / AstraZeneca, FreeSolv from Mobley and Guthrie). Built on PyTorch Geometric and RDKit.
 
 ## License
 
